@@ -5,6 +5,7 @@ function Renderer (opts) {
   this.canvas = null;
   this.camera = null;
   this.scene = null;
+  this.useOctree = true;
 
   Util.extend(this, opts);
 }
@@ -17,11 +18,19 @@ Renderer.prototype = {
 
     var nearestHit = null;
     var nearestT = Infinity;
+    var candidateObjects;
     var i, j;
 
-    for (i = 0; i < scene.objects.length; i++) {
+    if (this.useOctree) {
+      candidateObjects = this.scene.octree.getIntersectionObjects(ray);
+    } else {
+      candidateObjects = this.scene.objects;
+    }
+
+    for (i = 0; i < candidateObjects.length; i++) {
+    // for (i = 0; i < scene.objects.length; i++) {
       var tmin = 0.01;
-      var hit = scene.objects[i].intersects(ray, tmin, nearestT);
+      var hit = candidateObjects[i].intersects(ray, tmin, nearestT);
 
       if (hit && (nearestHit === null || hit.t < nearestT)) {
         nearestHit = hit;
@@ -46,9 +55,12 @@ Renderer.prototype = {
         var distanceToLight = scene.lights[i].position.subtract(nearestHit.position).length();
         var shadowRay = new Ray(nearestHit.position, Ln);
 
-        for (j = 0; j < scene.objects.length; j++) {
-          var shadowHit = scene.objects[j].intersects(shadowRay, 0.001, distanceToLight);
+        if (this.useOctree) {
+          candidateObjects = this.scene.octree.getIntersectionObjects(shadowRay);
+        }
 
+        for (j = 0; j < candidateObjects.length; j++) {
+          var shadowHit = candidateObjects[j].intersects(shadowRay, 0.001, distanceToLight);
           if (shadowHit) {
             if (shadowHit.material.isRefractive) {
               // Transparent: attenuate shadow color
@@ -119,6 +131,16 @@ Renderer.prototype = {
     var height = this.canvas.height;
     var imageData = context.getImageData(0, 0, width, height);
 
+    // TODO: extract out octree reconstruction
+    if (this.useOctree && this.scene.octree === null) {
+      var depth = Math.min(Math.floor(Math.log(this.scene.objects.length) / Math.log(8)), 10);
+      this.scene.octree = new Octree(BoundingBox.getBoundingFromObjects(this.scene.objects), depth);
+      for (var i = 0; i < this.scene.objects.length; i++) {
+        this.scene.octree.insert(this.scene.objects[i]);
+      }
+      console.log("Generated octree in ", new Date().getTime() - start, "ms", "Depth:", this.scene.octree.depth);
+    }
+
     for (var x = 0; x < width; x++) {
       for (var y = 0; y < height; y++) {
         var ray = this.camera.getRay(x, y, width, height);
@@ -133,6 +155,6 @@ Renderer.prototype = {
     }
 
     context.putImageData(imageData, 0, 0);
-    console.log("Time taken for this frame:", new Date().getTime() - start, "ms");
+    console.log("Time taken for this frame:", new Date().getTime() - start, "ms", "Octree", this.useOctree);
   }
 };

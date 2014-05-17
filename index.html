@@ -8,50 +8,51 @@
 </head>
 
 <body>
-
-
-    <div id="container">
-    <div id="dummy"></div>
+  <div id="container">
     <canvas id="output" width="120px" height="90px" style="border: solid 1px #DDD; float: left"></canvas>
+  </div>
 
-    <div id="sidebar">
-      <h1>
-      <font color="#raburaibu"><i><strong><u>3D</u> raytracer for ants</strong></i></font>
-      </h1>
+  <div id="sidebar">
+    <h1>
+    <font color="#raburaibu"><i><strong><u>3D</u> raytracer<br>for ants</strong></i></font>
+    </h1>
 
-      <h2>controls</h2>
-      <ul>
-        <li>
-          camera:
-          <ul>
-            <li>forward/backward in look at direction—zx</li>
-            <li>world x—ad</li>
-            <li>world y—rf</li>
-            <li>world z—ws</li>
-            <li>fov—qe</li>
-            <li>look at—click</li>
-          </ul>
-        </li>
-        <li>
-          light[0]:
-          <ul>
-            <li>world x—jk</li>
-            <li>world y—p;</li>
-            <li>world z—li</li>
-            <li>intensity—uo</li>
-            <li>look at—click</li>
-          </ul>
-        </li>
-        <li>F5 to reset</li>
-        <li>resize browser window for anti-aliasing</li>
-      </ul>
+    <h2>controls</h2>
+    <ul>
+      <li>
+        camera:
+        <ul>
+          <li>forward/backward in look at direction—zx</li>
+          <li>world x—ad</li>
+          <li>world y—rf</li>
+          <li>world z—ws</li>
+          <li>fov—qe</li>
+          <li>look at—click</li>
+        </ul>
+      </li>
+      <li>
+        light[0]:
+        <ul>
+          <li>world x—jk</li>
+          <li>world y—p;</li>
+          <li>world z—li</li>
+          <li>intensity—uo</li>
+          <li>look at—click</li>
+        </ul>
+      </li>
+      <li>F5 to reset</li>
+      <li>resize browser window for anti-aliasing</li>
+    </ul>
 
+    <div>
       <h2>stuff</h2>
 
-      <h3>resolution</h3>
+      <h3>render resolution</h3>
       <form id="resolution-form" name="resolution">
         <label for="resWidth">width</label>
         <input type="number" id="res-width" name="width"></input>
+
+        <br>
 
         <label for="resWidth">height</label>
         <input type="number" id="res-height" name="height"></input>
@@ -59,11 +60,17 @@
         <input type="submit" value="set">
       </form>
 
+      <h3>other stuff</h3>
+      click to toggle
+      <button id="octree-toggle">octree: ?</button>
+
+
       <h3>A button</h3>
       <button id="render">force render</button>
-      <button id="bunny">bunny: click and wait</button>
+      <button id="bunny"><marquee>&#128007; bunny: click and wait &#128048;</marquee></button>
     </div>
   </div>
+
 
   <div id="bunny-model">
 # File produced by Open Asset Import Library (http://www.assimp.sf.net)
@@ -815,6 +822,8 @@ f  63//292 148//292 56//292
   </div>
 
   <script src="./script/vector.js"></script>
+  <script src="./script/boundingBox.js"></script>
+  <script src="./script/octree.js"></script>
   <script src="./script/sphere.js"></script>
   <script src="./script/plane.js"></script>
   <script src="./script/triangle.js"></script>

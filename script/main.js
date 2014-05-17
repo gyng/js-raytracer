@@ -37,6 +37,8 @@
     isRefractive: true
   });
 
+  var sceneBounds = new BoundingBox(85, -85, 85, -85, 85, -85);
+
   var scene = {
     lights: [
       new PointLight({ position: new Vector(155, 120, 65.66), color: new Color(1, 1, 1) })
@@ -47,9 +49,9 @@
       new Sphere({ center: new Vector(70, 20, 77.32),    radius: 10, material: new CookTorranceMaterial() }),
       new Sphere({ center: new Vector(70, 37.32, 68.66), radius: 10, material: glassy }),
       new Sphere({ center: new Vector(20, 20, 20),       radius: 10, material: glassy }),
-      new Plane({ a: 0, b: 0, c: 1, d: 0, material: green }),
-      new Plane({ a: 0, b: 1, c: 0, d: 0, material: blue }),
-      new Plane({ a: 1, b: 0, c: 0, d: 0, material: red }),
+      new Plane({ a: 0, b: 0, c: 1, d: 0, material: green, bounding: sceneBounds }),
+      new Plane({ a: 0, b: 1, c: 0, d: 0, material: blue, bounding: sceneBounds }),
+      new Plane({ a: 1, b: 0, c: 0, d: 0, material: red, bounding: sceneBounds }),
       new Triangle({
         v0: new Vector(10, 30, 70),
         v1: new Vector(30, 4.02, 55),
@@ -57,7 +59,8 @@
         material: green
       })
     ],
-    background: new Color(0.13, 0.13, 0.13)
+    background: new Color(0.13, 0.13, 0.13),
+    octree: null
   };
 
   var renderer = new Renderer({
@@ -69,7 +72,7 @@
 
 
 
-  // Shitty controls ahead
+  // Shitty code ahead
   // TODO: hook controls to camera, maybe
   document.onkeydown = function (e) {
     var renderOn = [65, 68, 83, 87, 82, 70, 81, 69, 90, 88, 74, 73, 76, 75, 80, 59, 85, 79];
@@ -136,7 +139,8 @@
     console.log('bunny read');
     scene.lights[0].position = new Vector(200, -200, 100);
     scene.objects = OBJReader.read(bunny, red);
-    scene.objects.push(new Plane({ a: 0, b: 0, c: 1, d: 0, material: green }));
+    scene.objects.push(new Plane({ a: 0, b: 0, c: 1, d: 0, material: green, bounding: sceneBounds }));
+    scene.octree = null;
     camera.up = new Vector(0, 0, 1);
     camera.setPosition(new Vector(0, -200, 30));
     camera.setLookAt(new Vector(0, 60, 50));
@@ -152,5 +156,11 @@
     canvas.height = this.querySelector("input[name='height']").value;
     camera.setImageSize(canvas.width, canvas.height);
     renderer.render();
+  });
+
+  document.getElementById("octree-toggle").innerHTML = "octree: " + renderer.useOctree;
+  document.getElementById("octree-toggle").addEventListener("click", function (e) {
+    renderer.useOctree = !renderer.useOctree;
+    this.innerHTML = "octree: " + renderer.useOctree;
   });
 })();

@@ -2,6 +2,7 @@ function Sphere (opts) {
   this.center = new Vector(0, 0, 0);
   this.radius = 3;
   this.material = new FlatMaterial();
+  this.bounding = null;
 
   Util.extend(this, opts);
 }
@@ -65,5 +66,20 @@ Sphere.prototype = {
         return false;
       }
     }
+  },
+
+  getBounding: function () {
+    if (this.bounding === null) {
+      this.bounding = new BoundingBox(
+        this.center.x + this.radius,
+        this.center.x - this.radius,
+        this.center.y + this.radius,
+        this.center.y - this.radius,
+        this.center.z + this.radius,
+        this.center.z - this.radius
+      );
+    }
+
+    return this.bounding;
   }
 };

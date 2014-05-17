@@ -12,13 +12,14 @@ html, body {
 h1 {
     margin-top: 0;
     transform: translate3d(0px, 50px, 50px) rotateX(25deg) rotateY(35deg) rotateZ(15deg);
+    -webkit-transform: translate3d(0px, 50px, 50px) rotateY(5deg) rotateZ(15deg);
 }
 
 canvas {
     max-width: 80%;
     max-height: 100%;
     width: 100%;
-    height: auto;
+    /*height: auto;*/
     margin-right: 2em;
 }
 
@@ -33,31 +34,17 @@ ul, ol {
 }
 
 #container {
-    display: block;
-    position: relative;
-    width: 80%;
-}
-
-#dummy {
-    padding-top: 75%; /* 4:3 aspect ratio */
+    width: 95%;
 }
 
 #sidebar {
     position: absolute;
-    right: 0;
+    width: 20%;
     top: 0;
-    width: 15%;
-}
-
-#output {
-    float: left;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
     right: 0;
 }
 
 #bunny-model {
+    display: none;
     color: #eeeeee;
 }

@@ -1,9 +1,11 @@
+// Need to supply a bounding box for planes when using octrees.
 function Plane (opts) {
   this.a = 0;
   this.b = 1;
   this.c = 0;
   this.d = 0;
   this.material = new FlatMaterial();
+  this.bounding = null;
 
   Util.extend(this, opts);
 }
@@ -40,5 +42,22 @@ Plane.prototype = {
     } else {
       return false;
     }
+  },
+
+  getBounding: function () {
+    if (this.bounding === null) {
+      // this.bounding = new BoundingBox(
+      //   Infinity, -Infinity,
+      //   Infinity, -Infinity,
+      //   Infinity, -Infinity
+      // );
+      this.bounding = new BoundingBox(
+        0, 0,
+        0, 0,
+        0, 0
+      );
+    }
+
+    return this.bounding;
   }
 };

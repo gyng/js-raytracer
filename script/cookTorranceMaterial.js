@@ -55,10 +55,6 @@ CookTorranceMaterial.prototype = {
     var F = Math.pow(1 - VdotH, 5) * (1 - f0) + f0;
 
     // Microfacet distribution
-    // var r1 = 1 / (4 * this.roughness * this.roughness * Math.pow(NdotH, 4));
-    // var r2 = (NdotH * NdotH - 1) / (this.roughness * this.roughness * NdotH * NdotH);
-    // var D  = r1 * Math.exp(r2);
-
     var alpha = Math.acos(NdotH);
     var D = this.gaussConstant * Math.exp(-(alpha * alpha) / (this.roughness * this.roughness));
 
