@@ -91,7 +91,11 @@ Renderer.prototype = {
       var reflectRay = new Ray(nearestHit.position.add(R.scale(0.0001)), R);
       var reflectColor = this.trace(reflectRay, scene, reflectDepth - 1, refractDepth);
 
-      result = result.add(reflectColor.scale(nearestHit.material.Ks));
+      result = result.add(
+        reflectColor
+          .scale(nearestHit.material.Ks)
+          .multiply(nearestHit.material.specularColor)
+      );
     }
 
     // Refractions
@@ -100,7 +104,11 @@ Renderer.prototype = {
       var refractRay = new Ray(nearestHit.position.add(T.scale(0.0001)), T);
       var refractColor = this.trace(refractRay, scene, reflectDepth, refractDepth - 1);
 
-      result = result.add(refractColor.scale(1 - nearestHit.material.opacity));
+      result = result.add(
+        refractColor
+          .scale(1 - nearestHit.material.opacity)
+          .multiply(nearestHit.material.transmissionColor)
+      );
     }
 
     return result;

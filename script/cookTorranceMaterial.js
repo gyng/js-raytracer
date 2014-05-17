@@ -10,7 +10,7 @@ function CookTorranceMaterial (opts) {
   this.ambientColor = new Color(0.05, 0.05, 0.05);
   this.specularColor = new Color(1.0, 1.0, 1.0);
   this.diffuseColor = new Color(0.6, 0.6, 0.6);
-  this.transmissionColor = this.diffuseColor;
+  this.transmissionColor = new Color(1.0, 1.0, 1.0);
   this.gaussConstant = 100;
   this.isSpecular = true;
   this.isRefractive = false;
