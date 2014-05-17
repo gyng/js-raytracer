@@ -134,13 +134,13 @@
   });
 
   document.getElementById("bunny").addEventListener("click", function (e) {
-    console.log('bunny');
     var bunny = document.getElementById("bunny-model").innerHTML;
-    console.log('bunny read');
     scene.lights[0].position = new Vector(200, -200, 100);
     scene.objects = OBJReader.read(bunny, red);
     scene.objects.push(new Plane({ a: 0, b: 0, c: 1, d: 0, material: green, bounding: sceneBounds }));
+    // scene.objects.push(new Sphere({ center: new Vector(-75, 60, 50), radius: 40, material: new CookTorranceMaterial() }));
     scene.octree = null;
+    scene.background = new Color(0.3, 0.5, 0.8);
     camera.up = new Vector(0, 0, 1);
     camera.setPosition(new Vector(0, -200, 30));
     camera.setLookAt(new Vector(0, 60, 50));
