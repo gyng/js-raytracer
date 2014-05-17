@@ -9,7 +9,7 @@
 
 <body>
   <div id="container">
-    <canvas id="output" width="180px" height="135px" style="border: solid 1px #DDD; float: left"></canvas>
+    <canvas id="output" width="240px" height="180px" style="border: solid 1px #DDD; float: left"></canvas>
   </div>
 
   <div id="sidebar">
@@ -37,7 +37,6 @@
           <li>world y—p;</li>
           <li>world z—li</li>
           <li>intensity—uo</li>
-          <li>look at—click</li>
         </ul>
       </li>
       <li>F5 to reset</li>
@@ -47,25 +46,31 @@
     <div>
       <h2>stuff</h2>
 
-      <h3>render resolution</h3>
-      prove your supercomputer
+      <h3>prove your supercomputer</h3>
       <form id="resolution-form" name="resolution">
-        <label for="resWidth">width</label>
-        <input type="number" id="res-width" name="width"></input>
+        <label for="resWidth">render width</label>
+        <input type="number" id="res-width" name="width" min="1"></input>
         <br>
-        <label for="resWidth">height</label>
-        <input type="number" id="res-height" name="height"></input>
+        <label for="resWidth">render height</label>
+        <input type="number" id="res-height" name="height" min="1"></input>
 
-        <input type="submit" value="set">
+        <br><br>
+
+        <label for="resWidth">reflect depth</label>
+        <input type="number" id="reflect-depth" name="reflect" min="1"></input>
+        <br>
+        <label for="resWidth">refract depth</label>
+        <input type="number" id="refract-depth" name="refract" min="1"></input>
+
+        <br>
+        <input type="submit" value="set"> render time in console
       </form>
-      render time in console
 
       <h3>other stuff</h3>
-      click to toggle
       <button id="octree-toggle">octree: ?</button>
+      click to toggle
       <br>
-      octrees = faster (for dense scenes) but finite planes
-
+      octrees = faster (for dense scenes) but finite planes/scenes
 
       <h3>A button</h3>
       <button id="render">force render</button>

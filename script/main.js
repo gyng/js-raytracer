@@ -3,65 +3,79 @@
 
   var canvas = document.getElementById("output");
 
-  var camera = new Camera({
-    position: new Vector(150, 120, 150),
-    lookAt: new Vector(45, 22, 55),
-    up: new Vector(0, 1, 0),
-    imageWidth: canvas.width,
-    imageHeight: canvas.height
+  var red = new CookTorranceMaterial({
+    Ks: 0,
+    Kd: 1,
+    isReflective: false,
+    diffuseColor: new Color(0.6, 0.0, 0.0)
   });
 
-  var red = new CookTorranceMaterial({
-    Kd: 0.8,
-    Ks: 0.2,
+  var shinyRed = new CookTorranceMaterial({
+    Ks: 0.4,
+    Kd: 0.6,
     diffuseColor: new Color(0.6, 0.0, 0.0)
   });
 
   var green = new CookTorranceMaterial({
-    Kd: 0.6,
-    Ks: 0.4,
+    Ks: 0,
+    Kd: 1,
+    isReflective: false,
     diffuseColor: new Color(0.0, 0.6, 0.0)
   });
 
   var blue = new CookTorranceMaterial({
-    Kd: 0.7,
-    Ks: 0.3,
-    diffuseColor: new Color(0.0, 0.0, 0.6)
+    Kd: 0.6,
+    Ks: 0.4,
+    diffuseColor: new Color(0.4, 0.4, 0.7),
+    specularColor: new Color(0.4, 0.4, 0.7)
   });
 
   var glassy = new CookTorranceMaterial({
-    Kd: 0.1,
+    Kd: 0,
     Ks: 0.1,
-    opacity: 0.2,
+    opacity: 0,
     IOR: 1.2,
-    isRefractive: true
+    isRefractive: true,
+    diffuseColor: new Color(1, 1, 1),
+    specularColor: new Color(1, 1, 1)
   });
 
-  var sceneBounds = new BoundingBox(85, -85, 85, -85, 85, -85);
+  var grey = new CookTorranceMaterial({
+    Ks: 0,
+    Kd: 1,
+    isReflective: false,
+    diffuseColor: new Color(0.6, 0.6, 0.6)
+  });
 
+  var flat = new FlatMaterial();
+
+  var cornellBounds = new BoundingBox(400, -400, 400, -400, 400, -400);
   var scene = {
     lights: [
-      new PointLight({ position: new Vector(155, 120, 65.66), color: new Color(1, 1, 1) })
+      new PointLight({ position: new Vector(50, 90, 50), color: new Color(1, 1, 1) })
     ],
     objects: [
-      new Sphere({ center: new Vector(60, 20, 60),       radius: 10 }),
-      new Sphere({ center: new Vector(80, 20, 60),       radius: 10, material: red }),
-      new Sphere({ center: new Vector(70, 20, 77.32),    radius: 10, material: new CookTorranceMaterial() }),
-      new Sphere({ center: new Vector(70, 37.32, 68.66), radius: 10, material: glassy }),
-      new Sphere({ center: new Vector(20, 20, 20),       radius: 10, material: glassy }),
-      new Plane({ a: 0, b: 0, c: 1, d: 0, material: green, bounding: sceneBounds }),
-      new Plane({ a: 0, b: 1, c: 0, d: 0, material: blue, bounding: sceneBounds }),
-      new Plane({ a: 1, b: 0, c: 0, d: 0, material: red, bounding: sceneBounds }),
-      new Triangle({
-        v0: new Vector(10, 30, 70),
-        v1: new Vector(30, 4.02, 55),
-        v2: new Vector(30, 4.02, 85),
-        material: green
-      })
+      new Sphere({ center: new Vector(30, 15, 20), radius: 15, material: new CookTorranceMaterial() }),
+      new Sphere({ center: new Vector(70, 17, 60), radius: 17, material: glassy }),
+      new Sphere({ center: new Vector(50, 50, 20), radius: 10, material: blue }),
+
+      new Plane({ a: 0, b: 0, c: 1, d: 0, material: grey, bounding: cornellBounds }),
+      new Plane({ a: 1, b: 0, c: 0, d: 0, material: red, bounding: cornellBounds }),
+      new Plane({ a:-1, b: 0, c: 0, d: 100, material: green, bounding: cornellBounds }),
+      new Plane({ a: 0, b: 1, c: 0, d: 0, material: grey, bounding: cornellBounds }),
+      new Plane({ a: 0, b:-1, c: 0, d: 100, material: grey, bounding: cornellBounds })
     ],
-    background: new Color(0.13, 0.13, 0.13),
+    background: new Color(0, 0, 0),
     octree: null
   };
+
+  var camera = new Camera({
+    position: new Vector(50, 25, 300),
+    lookAt: new Vector(50, 50, 50),
+    up: new Vector(0, 1, 0),
+    imageWidth: canvas.width,
+    imageHeight: canvas.height
+  });
 
   var renderer = new Renderer({
     canvas: canvas,
@@ -116,6 +130,7 @@
     }
   };
 
+  // Click to look at
   canvas.addEventListener("mousedown", function (e) {
     console.log(e);
     var x = (e.clientX - canvas.offsetLeft) / canvas.clientWidth * canvas.width;
@@ -129,16 +144,18 @@
     }
   });
 
+  // Force render
   document.getElementById("render").addEventListener("click", function (e) {
     renderer.render();
   });
 
+  // Bunny
   document.getElementById("bunny").addEventListener("click", function (e) {
     var bunny = document.getElementById("bunny-model").innerHTML;
     scene.lights[0].position = new Vector(200, -200, 100);
-    scene.objects = OBJReader.read(bunny, red);
-    scene.objects.push(new Plane({ a: 0, b: 0, c: 1, d: 0, material: green, bounding: sceneBounds }));
-    // scene.objects.push(new Sphere({ center: new Vector(-75, 60, 50), radius: 40, material: new CookTorranceMaterial() }));
+    scene.objects = OBJReader.read(bunny, shinyRed);
+    scene.objects.push(new Plane({ a: 0, b: 0, c: 1, d: 0, material: green, bounding: cornellBounds }));
+    scene.objects.push(new Sphere({ center: new Vector(-75, 60, 50), radius: 40, material: new CookTorranceMaterial() }));
     scene.octree = null;
     scene.background = new Color(0.3, 0.5, 0.8);
     camera.up = new Vector(0, 0, 1);
@@ -148,16 +165,24 @@
     renderer.render();
   });
 
+  // Image quality
   document.getElementById("resolution-form").querySelector("input[name='width']").value = canvas.width;
   document.getElementById("resolution-form").querySelector("input[name='height']").value = canvas.height;
+  document.getElementById("resolution-form").querySelector("input[name='reflect']").value = renderer.reflectDepth;
+  document.getElementById("resolution-form").querySelector("input[name='refract']").value = renderer.refractDepth;
   document.getElementById("resolution-form").addEventListener("submit", function (e) {
     e.preventDefault();
     canvas.width = this.querySelector("input[name='width']").value;
     canvas.height = this.querySelector("input[name='height']").value;
     camera.setImageSize(canvas.width, canvas.height);
+
+    renderer.reflectDepth = this.querySelector("input[name='reflect']").value;
+    renderer.refractDepth = this.querySelector("input[name='refract']").value;
+
     renderer.render();
   });
 
+  // Octree
   document.getElementById("octree-toggle").innerHTML = "octree: " + renderer.useOctree;
   document.getElementById("octree-toggle").addEventListener("click", function (e) {
     renderer.useOctree = !renderer.useOctree;
