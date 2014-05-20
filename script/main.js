@@ -58,12 +58,11 @@
       new Sphere({ center: new Vector(30, 15, 20), radius: 15, material: new CookTorranceMaterial() }),
       new Sphere({ center: new Vector(70, 17, 60), radius: 17, material: glassy }),
       new Sphere({ center: new Vector(50, 50, 20), radius: 10, material: blue }),
-
-      new Plane({ a: 0, b: 0, c: 1, d: 0, material: grey, bounding: cornellBounds }),
-      new Plane({ a: 1, b: 0, c: 0, d: 0, material: red, bounding: cornellBounds }),
+      new Plane({ a: 0, b: 0, c: 1, d: 0,   material: grey,  bounding: cornellBounds }),
+      new Plane({ a: 1, b: 0, c: 0, d: 0,   material: red,   bounding: cornellBounds }),
       new Plane({ a:-1, b: 0, c: 0, d: 100, material: green, bounding: cornellBounds }),
-      new Plane({ a: 0, b: 1, c: 0, d: 0, material: grey, bounding: cornellBounds }),
-      new Plane({ a: 0, b:-1, c: 0, d: 100, material: grey, bounding: cornellBounds })
+      new Plane({ a: 0, b: 1, c: 0, d: 0,   material: grey,  bounding: cornellBounds }),
+      new Plane({ a: 0, b:-1, c: 0, d: 100, material: grey,  bounding: cornellBounds })
     ],
     background: new Color(0, 0, 0),
     octree: null

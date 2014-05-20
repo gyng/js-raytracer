@@ -1,6 +1,13 @@
-// Based off: http://renderman.pixar.com/view/cook-torrance-shader and http://ruh.li/GraphicsCookTorrance.html
+/* Cook-Torrance material: a physically-based specular shader which follows
+   positivity, obeys the Helmholtz reciprocity, and is energy-conserving.
+
+   It takes into account Fresnel effects, microfacet distribution (modelled by a
+   normal distribution) and geometric attenuation (shadowing/masking effects).
+
+   Based off: http://renderman.pixar.com/view/cook-torrance-shader
+              http://ruh.li/GraphicsCookTorrance.html
+ */
 function CookTorranceMaterial (opts) {
-  // Defaults
   this.Ka = 1;
   this.Ks = 0.8;
   this.Kd = 0.2;
@@ -39,9 +46,9 @@ CookTorranceMaterial.prototype = {
   brdf: function (N, I, L) {
     var Nn = N.normalize();
     var Vn = I.normalize();
+    var Ln = L.normalize();
 
     var NdotV = Nn.dot(Vn);
-    var Ln = L.normalize();
     var H = Vn.add(Ln).normalize();
 
     var NdotH = Nn.dot(H);
