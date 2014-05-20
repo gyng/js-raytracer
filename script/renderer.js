@@ -16,27 +16,10 @@ Renderer.prototype = {
       return new Color(0, 0, 0);
     }
 
-    var nearestHit = null;
-    var nearestT = Infinity;
     var candidateObjects;
     var i, j;
 
-    if (this.useOctree) {
-      candidateObjects = this.scene.octree.getIntersectionObjects(ray);
-    } else {
-      candidateObjects = this.scene.objects;
-    }
-
-    for (i = 0; i < candidateObjects.length; i++) {
-    // for (i = 0; i < scene.objects.length; i++) {
-      var tmin = 0.01;
-      var hit = candidateObjects[i].intersects(ray, tmin, nearestT);
-
-      if (hit && (nearestHit === null || hit.t < nearestT)) {
-        nearestHit = hit;
-        nearestT = nearestHit.t;
-      }
-    }
+    var nearestHit = this.getNearestHit(ray);
 
     if (nearestHit === null) {
       return scene.background;
@@ -89,7 +72,7 @@ Renderer.prototype = {
     if (nearestHit.material.isSpecular && nearestHit.material.Ks > 0) {
       var R = ray.direction.reflect(nearestHit.N);
       var reflectRay = new Ray(nearestHit.position.add(R.scale(0.0001)), R);
-      var reflectColor = this.trace(reflectRay, scene, reflectDepth - 1, refractDepth);
+      var reflectColor = this.trace(reflectRay, scene, reflectDepth - 1, refractDepth, shadows);
 
       result = result.add(
         reflectColor
@@ -102,7 +85,7 @@ Renderer.prototype = {
     if (nearestHit.material.isRefractive && nearestHit.material.opacity < 1) {
       var T = ray.direction.refract(nearestHit.N, nearestHit.material.IOR);
       var refractRay = new Ray(nearestHit.position.add(T.scale(0.0001)), T);
-      var refractColor = this.trace(refractRay, scene, reflectDepth, refractDepth - 1);
+      var refractColor = this.trace(refractRay, scene, reflectDepth, refractDepth - 1, shadows);
 
       result = result.add(
         refractColor
@@ -115,13 +98,26 @@ Renderer.prototype = {
   },
 
   screenToWorld: function (x, y) {
+    var ray = this.camera.getRay(x, y);
+    var nearestHit = this.getNearestHit(ray);
+
+    return nearestHit ? nearestHit.position : null;
+  },
+
+  getNearestHit: function (ray) {
     var nearestHit = null;
     var nearestT = Infinity;
-    var ray = this.camera.getRay(x, y);
+    var candidateObjects;
 
-    for (i = 0; i < this.scene.objects.length; i++) {
+    if (this.useOctree) {
+      candidateObjects = this.scene.octree.getIntersectionObjects(ray);
+    } else {
+      candidateObjects = this.scene.objects;
+    }
+
+    for (i = 0; i < candidateObjects.length; i++) {
       var tmin = 0.01;
-      var hit = this.scene.objects[i].intersects(ray, tmin, nearestT);
+      var hit = candidateObjects[i].intersects(ray, tmin, nearestT);
 
       if (hit && (nearestHit === null || hit.t < nearestT)) {
         nearestHit = hit;
@@ -129,7 +125,7 @@ Renderer.prototype = {
       }
     }
 
-    return nearestHit ? nearestHit.position : null;
+    return nearestHit;
   },
 
   render: function () {
@@ -143,9 +139,11 @@ Renderer.prototype = {
     if (this.useOctree && this.scene.octree === null) {
       var depth = Math.min(Math.floor(Math.log(this.scene.objects.length) / Math.log(8)), 10);
       this.scene.octree = new Octree(BoundingBox.getBoundingFromObjects(this.scene.objects), depth);
+
       for (var i = 0; i < this.scene.objects.length; i++) {
         this.scene.octree.insert(this.scene.objects[i]);
       }
+
       console.log("Generated octree in ", new Date().getTime() - start, "ms", "Depth:", this.scene.octree.depth);
     }
 
