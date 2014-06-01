@@ -30,11 +30,15 @@
     specularColor: new Color(0.4, 0.4, 0.7)
   });
 
+  var diffuseBlue = new LambertianMaterial({
+    diffuseColor: new Color(0.0, 0.0, 0.6)
+  });
+
   var glassy = new CookTorranceMaterial({
     Kd: 0,
-    Ks: 0.1,
+    Ks: 0.0,
     opacity: 0,
-    IOR: 1.2,
+    IOR: 3,
     isRefractive: true,
     diffuseColor: new Color(1, 1, 1),
     specularColor: new Color(1, 1, 1)
@@ -56,9 +60,10 @@
     ],
     objects: [
       new Sphere({ center: new Vector(30, 15, 20), radius: 15, material: new CookTorranceMaterial() }),
-      new Sphere({ center: new Vector(70, 17, 60), radius: 17, material: glassy }),
+      new Sphere({ center: new Vector(70, 17, 80), radius: 17, material: glassy }),
       new Sphere({ center: new Vector(50, 50, 20), radius: 10, material: blue }),
       new Plane({ a: 0, b: 0, c: 1, d: 0,   material: grey,  bounding: cornellBounds }),
+      new Plane({ a: 0, b: 0, c:-1, d: 300, material: diffuseBlue,  bounding: cornellBounds }),
       new Plane({ a: 1, b: 0, c: 0, d: 0,   material: red,   bounding: cornellBounds }),
       new Plane({ a:-1, b: 0, c: 0, d: 100, material: green, bounding: cornellBounds }),
       new Plane({ a: 0, b: 1, c: 0, d: 0,   material: grey,  bounding: cornellBounds }),

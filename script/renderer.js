@@ -65,7 +65,11 @@ Renderer.prototype = {
         light: scene.lights[i]
       };
 
-      result = result.add(nearestHit.material.sample(args).multiply(shadowColor));
+      result = result.add(
+        nearestHit.material.sample(args)
+          .scale(nearestHit.material.Kd)
+          .multiply(shadowColor)
+      );
     }
 
     // Reflections
@@ -105,6 +109,7 @@ Renderer.prototype = {
   },
 
   getNearestHit: function (ray) {
+    var tmin = 0.001;
     var nearestHit = null;
     var nearestT = Infinity;
     var candidateObjects;
@@ -116,10 +121,9 @@ Renderer.prototype = {
     }
 
     for (i = 0; i < candidateObjects.length; i++) {
-      var tmin = 0.01;
       var hit = candidateObjects[i].intersects(ray, tmin, nearestT);
 
-      if (hit && (nearestHit === null || hit.t < nearestT)) {
+      if (hit && hit.t > tmin && (nearestHit === null || hit.t < nearestT)) {
         nearestHit = hit;
         nearestT = nearestHit.t;
       }

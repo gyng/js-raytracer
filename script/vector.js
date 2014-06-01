@@ -84,33 +84,22 @@ Vector.prototype = {
      Detection of ingoing or outcoming vectors assumes all objects are enclosed.
   */
   refract: function(N, IOR) {
-    var NdotI = N.normalize().dot(this.scale(-1).normalize());
-    var n, n1, n2, Nn;
+    N = N.normalize();
+    var I = this.scale(-1).normalize();
+    var NdotI = N.dot(I);
+    var inside = NdotI < 0;
+    N = inside ? N.scale(-1) : N;
 
-    if (NdotI > 0) {
-      // Ingoing
-      n1 = 1;
-      n2 = IOR;
-      Nn = N.normalize();
+    var n1 = inside ? IOR : 1;
+    var n2 = inside ? 1 : IOR;
+    var ref = n1 / n2;
+    var first = I.subtract(N.scale(NdotI)).scale(-ref);
+    var disc = 1 - ((ref * ref) * (1 - NdotI * NdotI));
+
+    if (disc >= 0) {
+      return first.subtract(N.scale(Math.sqrt(disc))).normalize();
     } else {
-      // Outgoing
-      n1 = IOR;
-      n2 = 1;
-      // Flip normal: normal at exit intersection is pointing opposite to incoming ray.
-      NdotI = N.normalize().scale(-1).dot(this.normalize());
-      Nn = N.scale(-1).normalize();
-    }
-
-    n = n1 / n2;
-    var discriminant = 1 - (n * n * (1 - NdotI * NdotI));
-
-    if (discriminant < 0) {
-      // Total internal reflection
-      return this.reflect(this, Nn);
-    } else {
-      return this
-        .scale(-n)
-        .add(Nn.scale(n * NdotI - Math.sqrt(discriminant)));
+      return this.reflect(N);
     }
   }
 };
