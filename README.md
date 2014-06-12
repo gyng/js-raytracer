@@ -3,13 +3,17 @@ js-raytracer
 
 Likely incorrect JS raytracer.
 
+## Have
 * Octree
 * Shadows
 * Reflections
-* Materials: Phong, Lambertian, Flat, Cook-Torrance shading.
+* Refractions
+* Materials: Phong, Lambertian, Flat, Cook-Torrance shading
 * Rudimentary OBJ mesh loading: click the bunny button!
 
-Missing webworker usage for parallel rendering.
+## Missing
+* WebWorkers for parallel rendering
+* Fresnel calculations for reflect/refract strength
 
 A rewrite to clean up code and use web workers is pending.
 
