@@ -7,6 +7,8 @@ function Camera (opts) {
   this.imageHeight = 320;
   this.imageWidth  = 240;
 
+  this.velocity = new Vector(0, 0, 0);
+
   Util.extend(this, opts);
 
   // Update ``projection''
@@ -59,5 +61,14 @@ Camera.prototype = {
         .add(this.vpUp.scale((y * this.pixelHeight) - this.halfHeight))
         .normalize()
     );
+  },
+
+  walk: function (vector) {
+    this.velocity = vector;
+  },
+
+  tick: function () {
+    this.position = this.position.add(this.velocity);
+    // this.velocity = this.velocity.scale(0.8);
   }
 };

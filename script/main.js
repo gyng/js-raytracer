@@ -62,12 +62,12 @@
       new Sphere({ center: new Vector(30, 15, 20), radius: 15, material: new CookTorranceMaterial() }),
       new Sphere({ center: new Vector(70, 17, 80), radius: 17, material: glassy }),
       new Sphere({ center: new Vector(50, 50, 20), radius: 10, material: blue }),
-      new Plane({ a: 0, b: 0, c: 1, d: 0,   material: grey,  bounding: cornellBounds }),
-      new Plane({ a: 0, b: 0, c:-1, d: 300, material: diffuseBlue,  bounding: cornellBounds }),
-      new Plane({ a: 1, b: 0, c: 0, d: 0,   material: red,   bounding: cornellBounds }),
-      new Plane({ a:-1, b: 0, c: 0, d: 100, material: green, bounding: cornellBounds }),
-      new Plane({ a: 0, b: 1, c: 0, d: 0,   material: grey,  bounding: cornellBounds }),
-      new Plane({ a: 0, b:-1, c: 0, d: 100, material: grey,  bounding: cornellBounds })
+      new Plane({ a: 0, b: 0, c: 1, d: 200,   material: grey,  bounding: cornellBounds }),
+      new Plane({ a: 0, b: 0, c:-1, d: 600, material: diffuseBlue,  bounding: cornellBounds }),
+      new Plane({ a: 1, b: 0, c: 0, d: 200,   material: red,   bounding: cornellBounds }),
+      new Plane({ a:-1, b: 0, c: 0, d: 200, material: green, bounding: cornellBounds }),
+      new Plane({ a: 0, b: 1, c: 0, d: 200,   material: grey,  bounding: cornellBounds }),
+      new Plane({ a: 0, b:-1, c: 0, d: 200, material: grey,  bounding: cornellBounds })
     ],
     background: new Color(0, 0, 0),
     octree: null
@@ -96,18 +96,21 @@
     var renderOn = [65, 68, 83, 87, 82, 70, 81, 69, 90, 88, 74, 73, 76, 75, 80, 59, 85, 79];
     var render = (renderOn.indexOf(e.keyCode) >= 0);
 
+    var forward = camera.lookAt.subtract(camera.position).normalize().scale(10);
+    var sideways = forward.normalize().cross(camera.up.normalize()).scale(10);
+
     switch (e.keyCode) {
     // Camera
-    case 65: camera.move(new Vector(-10, 0, 0)); break; // a
-    case 68: camera.move(new Vector(10, 0, 0));  break; // d
-    case 83: camera.move(new Vector(0, 0, -10)); break; // s
-    case 87: camera.move(new Vector(0, 0, 10));  break; // w
-    case 82: camera.move(new Vector(0, 10, 0));  break; // r
-    case 70: camera.move(new Vector(0, -10, 0)); break; // f
+    case 65: camera.walk(sideways.scale(-1)); break; // a
+    case 68: camera.walk(sideways); break; // d
+    case 83: camera.walk(forward.scale(-1)); break; // s
+    case 87: camera.walk(forward); break; // w
+    case 82: camera.walk(new Vector(0, 10, 0));  break; // r
+    case 70: camera.walk(new Vector(0, -10, 0)); break; // f
     case 81: camera.setFov(camera.fovDeg + 10);  break; // q
     case 69: camera.setFov(camera.fovDeg - 10);  break; // e
-    case 90: camera.move(camera.eye.normalize().scale(10));  break; // z
-    case 88: camera.move(camera.eye.normalize().scale(-10)); break; // x
+    case 90: camera.walk(camera.eye.normalize().scale(10));  break; // z
+    case 88: camera.walk(camera.eye.normalize().scale(-10)); break; // x
 
     // Lights
     case 74: // j
@@ -128,25 +131,39 @@
       scene.lights[0].color = scene.lights[0].color.scale(1.2); break;
     }
 
-    if (render) {
-      console.log("light", scene.lights[0].position, scene.lights[0].color, "camera", camera.position, "fov", camera.fovDeg, "key", e.keyCode);
-      renderer.render();
-    }
+    // if (render) {
+    //   console.log("light", scene.lights[0].position, scene.lights[0].color, "camera", camera.position, "fov", camera.fovDeg, "key", e.keyCode);
+    //   renderer.render();
+    // }
+  };
+
+  document.onkeyup = function (e) {
+    camera.walk(new Vector(0, 0, 0));
   };
 
   // Click to look at
-  canvas.addEventListener("mousedown", function (e) {
-    console.log(e);
-    var x = (e.clientX - canvas.offsetLeft) / canvas.clientWidth * canvas.width;
-    var y = -1 * (e.clientY - canvas.offsetHeight) / canvas.clientHeight * canvas.height;
-    console.log(x, y, renderer.screenToWorld(x, y));
+
+  var lookAt = function (e) {
+    if (!mouselocked) return;
+
+    var x = e.movementX / canvas.clientWidth * canvas.width + canvas.width / 2;
+    var y = e.movementY * -1 / canvas.clientHeight * canvas.height + canvas.height / 2;
+
+    console.log(x, y)
+
+    // var y = -1 * e.movementY / canvas.clientHeight * canvas.height;
+    // var y = canvas.height / 2;
+
+    // console.log(x, y, renderer.screenToWorld(x, y));
     var newLookAt = renderer.screenToWorld(x, y);
 
     if (newLookAt) {
       camera.setLookAt(newLookAt);
-      renderer.render();
+      // renderer.render();
     }
-  });
+  }
+
+  // canvas.addEventListener("mousedown", lookAt);
 
   // Force render
   document.getElementById("render").addEventListener("click", function (e) {
@@ -191,5 +208,49 @@
   document.getElementById("octree-toggle").addEventListener("click", function (e) {
     renderer.useOctree = !renderer.useOctree;
     this.innerHTML = "octree: " + renderer.useOctree;
+  });
+
+  // FPS code
+  canvas.requestPointerLock = canvas.requestPointerLock ||
+           canvas.mozRequestPointerLock;
+
+  canvas.onclick = function() {
+    canvas.requestPointerLock();
+  }
+
+  canvas.addEventListener('mousemove', lookAt);
+
+  var mouselocked = false;
+  function lockChangeAlert() {
+    if(document.pointerLockElement === canvas ||
+    document.mozPointerLockElement === canvas) {
+      console.log('The pointer lock status is now locked');
+      mouselocked = true;
+    } else {
+      console.log('The pointer lock status is now unlocked');
+      mouselocked = false;
+    }
+  }
+
+  document.addEventListener('pointerlockchange', lockChangeAlert, false);
+  document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+
+  var lastTime = undefined;
+  window.requestAnimationFrame(function raf(time) {
+    var deltaTime;
+
+    if (typeof lastTime === undefined) {
+      lastTime = time;
+      deltaTime = 0;
+    }
+
+    deltaTime = lastTime - time;
+
+    camera.tick(deltaTime);
+    scene.lights[0].position = camera.lookAt.add(camera.position.subtract(camera.lookAt).scale(0.1));
+    renderer.render();
+
+    var lastTime = time;
+    window.requestAnimationFrame(raf);
   });
 })();

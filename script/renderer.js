@@ -1,6 +1,6 @@
 function Renderer (opts) {
   this.reflectDepth = 2;
-  this.refractDepth = 4;
+  this.refractDepth = 2;
   this.shadows = true;
   this.canvas = null;
   this.camera = null;
@@ -165,6 +165,6 @@ Renderer.prototype = {
     }
 
     context.putImageData(imageData, 0, 0);
-    console.log("Time taken for this frame:", new Date().getTime() - start, "ms", "Octree", this.useOctree);
+    // console.log("Time taken for this frame:", new Date().getTime() - start, "ms", "Octree", this.useOctree);
   }
 };
